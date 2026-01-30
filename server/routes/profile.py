@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import func, select
+from sqlalchemy import case, exists, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
@@ -23,6 +23,7 @@ async def get_profile(username: str, current_user_id: int = Depends(get_current_
     posts_subq = select(func.count(Post.id)).where(Post.user_id == user.id).scalar_subquery()
     followers_subq = select(func.count(Follow.id)).where(Follow.following_id == user.id).scalar_subquery()
     following_subq = select(func.count(Follow.id)).where(Follow.follower_id == user.id).scalar_subquery()
+    followed_subq = exists().where(Follow.follower_id == current_user_id, Follow.following_id == user.id)
 
     stmt = select(
         User.id,
@@ -30,7 +31,8 @@ async def get_profile(username: str, current_user_id: int = Depends(get_current_
         User.profile_image,
         posts_subq.label('posts'),
         followers_subq.label('followers'),
-        following_subq.label('following')
+        following_subq.label('following'),
+        followed_subq.label('followed')
     ).where(User.id == user.id)
 
     res = await db.execute(stmt)
@@ -46,6 +48,7 @@ async def get_profile(username: str, current_user_id: int = Depends(get_current_
         'posts': profile.posts,
         'followers': profile.followers,
         'following': profile.following,
+        'followed': profile.followed,
         'is_me': profile.id == current_user_id
     }
 

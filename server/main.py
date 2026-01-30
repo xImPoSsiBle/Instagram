@@ -7,7 +7,7 @@ from core.database import engine, Base
 from models import *
 from schemas import *
 from utils import *
-from routes import auth, posts, likes, comments, profile
+from routes import auth, posts, likes, comments, profile, follows
 
 app = FastAPI()
 
@@ -27,6 +27,7 @@ app.include_router(posts.router)
 app.include_router(likes.router)
 app.include_router(comments.router)
 app.include_router(profile.router)
+app.include_router(follows.router)
 
 
 

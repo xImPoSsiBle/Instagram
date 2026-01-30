@@ -16,6 +16,13 @@ export const profileApi = createApi({
         getProfilePosts: build.query<Post[], string>({
             query: (username) => `profile/${username}/posts`,
             providesTags: ['ProfilePosts']
+        }),
+        toggleFollow: build.mutation<{ followed: boolean }, number>({
+            query: (id) => ({
+                url: `follow/${id}`,
+                method: 'POST'
+            }),
+            invalidatesTags: ['Profile']
         })
     })
 })

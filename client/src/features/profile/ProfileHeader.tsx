@@ -6,9 +6,14 @@ interface ProfileHeaderProps {
 
 const ProfileHeader = ({ username }: ProfileHeaderProps) => {
     const { data: user } = profileApi.useGetProfileQuery(username)
+    const [toggleFollow] = profileApi.useToggleFollowMutation()
 
     const isDefaultAvatar = user?.profile_image?.includes('default-avatar') ?? false
 
+    if(!user) {
+        return <div>Не найден</div>
+    }
+console.log(user)
     return (
         <div className="my-5 w-[70%] flex items-center flex-col">
             <div className="flex items-center">
@@ -36,7 +41,15 @@ const ProfileHeader = ({ username }: ProfileHeaderProps) => {
                     Редактировать профиль
                 </button>
                 : <div className="flex gap-5">
-                    <button className="bg-[#0066f4] w-60 min-h-5 p-2 rounded-xl cursor-pointer">Подписаться</button>
+                    <button 
+                    className={`${user.followed ? 'bg-[#2b3036cc]' : 'bg-[#0066f4]'} w-60 min-h-5 p-2 rounded-xl cursor-pointer`}
+                    onClick={() => toggleFollow(user.id)}
+                    >
+                        {user.followed 
+                        ? <span>Отписаться</span>
+                        : <span>Подписаться</span>
+                        }
+                    </button>
                     <button className="bg-[#2b3036cc] w-60 min-h-5 p-2 rounded-xl cursor-pointer">Сообщение</button>
                 </div>
             }
