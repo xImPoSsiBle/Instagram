@@ -1,0 +1,43 @@
+import { Route, Routes, useLocation } from 'react-router-dom'
+import './App.css'
+import Main from './features/main/Main'
+import Login from './features/auth/Login'
+import Register from './features/auth/Register'
+import MainLayout from './layouts/MainLayout'
+import AuthLayout from './layouts/AuthLayout'
+import PrivateRoute from './routes/PrivateRoute'
+import PostDetails from './components/PostDetails'
+import ProfilePage from './features/profile/ProfilePage'
+
+function App() {
+  const location = useLocation()
+  const state = location.state as { backgroundLocation?: Location }
+
+  return (
+    <>
+      <Routes location={state?.backgroundLocation || location}>
+        <Route element={<PrivateRoute />}>
+          <Route element={<MainLayout />}>
+            <Route path='/' element={<Main />} />
+            <Route path='/profile/:username' element={<ProfilePage />} key={location.pathname} />
+          </Route>
+        </Route>
+
+        <Route element={<AuthLayout />}>
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
+        </Route>
+      </Routes>
+
+      {state?.backgroundLocation && (
+        <Routes>
+          <Route element={<PrivateRoute />}>
+            <Route element={<PostDetails />} path='/post/:id' />
+          </Route>
+        </Routes>
+      )}
+    </>
+  )
+}
+
+export default App
