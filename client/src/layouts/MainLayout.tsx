@@ -18,7 +18,7 @@ const MainLayout = () => {
     }, [])
 
     return (
-        <div className="flex">
+        <div className="flex flex-col md:flex-row">
             {createPostModal && <CreatePostModal />}
             <SideBar />
 

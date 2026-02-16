@@ -18,14 +18,14 @@ const SideBar = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
-    const {user} = useAppSelector(state => state.auth)
+    const { user } = useAppSelector(state => state.auth)
 
     const menuItems: MenuItems[] = [
-        { name: 'Главная', icon: <GoHome size={26} />, onClick: () => { navigate('/') } },
-        { name: 'Создать', icon: <FiPlus size={26} />, onClick: () => { dispatch(toggleCreatePostModal()) } },
-        { name: 'Профиль', icon: <FiUser  size={26} />, onClick: () => { navigate(`/profile/${user.username}`) } },
+        { name: 'Главная', icon: <GoHome className="w-6 h-6 shrink-0" />, onClick: () => { navigate('/') } },
+        { name: 'Создать', icon: <FiPlus className="w-6 h-6 shrink-0" />, onClick: () => { dispatch(toggleCreatePostModal()) } },
+        { name: 'Профиль', icon: <FiUser className="w-6 h-6 shrink-0" />, onClick: () => { navigate(`/profile/${user.username}`) } },
         {
-            name: 'Выход', icon: <IoExitOutline size={26} />,
+            name: 'Выход', icon: <IoExitOutline className="w-6 h-6 shrink-0" />,
             onClick: () => {
                 dispatch(logout())
                 dispatch(postApi.util.resetApiState())
@@ -34,12 +34,13 @@ const SideBar = () => {
     ];
 
     return (
-        <div className="w-1/6 h-screen text-white border-[rgb(38,38,38)] border-r-1 flex flex-col items-center fixed">
-            <h1 className="text-2xl my-10">Instagram</h1>
+        <div className="fixed z-50 bottom-0 left-0 w-full h-16 text-white border-[rgb(38,38,38)] flex flex-row items-center justify-around bg-black border-t-1 md:w-1/6 md:h-screen md:border-r-1 md:flex-col md:justify-start"
+        >
+            <h1 className="text-xl hidden md:text-2xl md:block my-10">Instagram</h1>
             {menuItems.map((item) => (
-                <div key={item.name} className="w-4/5 text-lg my-2 flex items-center gap-3 cursor-pointer hover:bg-[rgba(255,255,255,0.1)] p-3 rounded-xl transition" onClick={() => item?.onClick?.()}>
+                <div key={item.name} className="w-4/5 my-2 flex items-center justify-center md:justify-start gap-3 cursor-pointer hover:bg-[rgba(255,255,255,0.1)] p-3 rounded-xl transition" onClick={() => item?.onClick?.()}>
                     {item.icon}
-                    <span>{item.name}</span>
+                    <span className="text-md hidden md:block lg:text-lg">{item.name}</span>
                 </div>
             ))}
         </div>

@@ -10,7 +10,7 @@ const Main = () => {
     console.log(posts)
 
     return (
-        <div className='w-screen h-screen text-white flex flex-col items-center'>
+        <div className='w-full h-full text-white flex flex-col items-center mb-15 md:mb-0'>
             {isLoading &&
                 [1, 2, 3, 4, 5].map((i) => (
                     <div className='w-[470px] flex flex-col gap-3 border-b-1 p-3 mb-5' key={i}>

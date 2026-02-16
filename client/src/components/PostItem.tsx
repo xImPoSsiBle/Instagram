@@ -51,7 +51,7 @@ const PostItem = ({ post }: PostItemProps) => {
             )}
             {post.media_type === "video" ? (
                 <video
-                    className={`w-full rounded-md ${imageLoaded ? "block" : "hidden"}`}
+                    className={`w-full h-100 rounded-md ${imageLoaded ? "block" : "hidden"}`}
                     src={post.image}
                     muted
                     preload="metadata"
@@ -59,7 +59,7 @@ const PostItem = ({ post }: PostItemProps) => {
                 />
             ) : (
                 <img
-                    className={`w-full rounded-md ${imageLoaded ? "block" : "hidden"}`}
+                    className={`w-full h-100 rounded-md ${imageLoaded ? "block" : "hidden"}`}
                     src={post.image}
                     onLoad={() => setImageLoaded(true)}
                     alt=""
