@@ -43,7 +43,7 @@ async def get_posts(user_id: int = Depends(get_current_user), db: AsyncSession =
             'user': {
                 'id': user.id,
                 'username': user.username,
-                'profile_image': f"http://localhost:8000/{user.profile_image}"
+                'profile_image': (f"http://localhost:8000/{user.profile_image}" if user.profile_image else f"http://localhost:8000/images/default-avatar.png")
             }
         })
 
@@ -111,6 +111,6 @@ async def get_post(post_id: int, user_id: int = Depends(get_current_user), db: A
         'user': {
             'id': post.user_id,
             'username': user.username,
-            'profile_image': f"http://localhost:8000/{user.profile_image}"
+            'profile_image': (f"http://localhost:8000/{user.profile_image}" if user.profile_image else f"http://localhost:8000/images/default-avatar.png")
         }
     }

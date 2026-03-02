@@ -25,6 +25,8 @@ const PostItem = ({ post }: PostItemProps) => {
         })
     }
 
+    const isDefaultAvatar = post?.user?.profile_image?.includes('default-avatar') ?? false
+    
     return (
         <div className='w-[470px] flex flex-col gap-3 p-3 mb-5'>
             <div className="flex items-center gap-3">
@@ -33,8 +35,8 @@ const PostItem = ({ post }: PostItemProps) => {
                 )}
 
                 <img
-                    className={`w-10 h-10 rounded-full ${avatarLoaded ? "block" : "hidden"}`}
-                    src="https://www.befunky.com/images/wp/wp-2020-07-orignal-mirror-selfie-1.jpg"
+                    className={`w-10 h-10 rounded-full ${avatarLoaded ? "block" : "hidden"} ${isDefaultAvatar && 'invert'}`}
+                    src={post.user.profile_image}
                     onLoad={() => setAvatarLoaded(true)}
                     alt=""
                 />

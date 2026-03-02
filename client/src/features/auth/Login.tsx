@@ -40,6 +40,10 @@ const Login = () => {
         navigate(from, { replace: true })
     }
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if(event.key === 'Enter') handleLogin()
+    }
+
     useEffect(() => {
         if(isAuth) navigate(from, { replace: true })
     }, [isAuth, navigate, from])
@@ -51,6 +55,7 @@ const Login = () => {
                     type="text"
                     placeholder='Введите имя пользователя'
                     onChange={(e) => setUsername(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     value={username}
                     className='w-100 h-15 text-white p-3 rounded-2xl bg-[#1f1f1f]'
                 />
@@ -59,6 +64,7 @@ const Login = () => {
                         type={visible ? 'text' : 'password'}
                         placeholder='Пароль'
                         onChange={(e) => setPassword(e.target.value)}
+                        onKeyDown={handleKeyDown}
                         value={password}
                         className='w-100 h-15 text-white p-3 pr-12 rounded-2xl bg-[#1f1f1f]'
                     />
