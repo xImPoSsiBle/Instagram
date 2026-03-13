@@ -15,13 +15,13 @@ const PostItem = ({ post }: PostItemProps) => {
     const [imageLoaded, setImageLoaded] = useState(false)
 
     const navigate = useNavigate()
-    const localtion = useLocation()
+    const location = useLocation()
 
     const [toggleLike] = postApi.useToggleLikeMutation()
 
     const handleClick = () => {
         navigate(`/post/${post.id}`, {
-            state: { backgroundLocation: localtion }
+            state: { backgroundLocation: location }
         })
     }
 

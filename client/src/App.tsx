@@ -8,6 +8,7 @@ import AuthLayout from './layouts/AuthLayout'
 import PrivateRoute from './routes/PrivateRoute'
 import PostDetails from './components/PostDetails'
 import ProfilePage from './features/profile/ProfilePage'
+import FollowDetails from './components/FollowDetails'
 
 function App() {
   const location = useLocation()
@@ -33,6 +34,7 @@ function App() {
         <Routes>
           <Route element={<PrivateRoute />}>
             <Route element={<PostDetails />} path='/post/:id' />
+            <Route element={<FollowDetails />} path='/profile/:username/:type' />
           </Route>
         </Routes>
       )}

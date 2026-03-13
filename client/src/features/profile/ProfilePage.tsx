@@ -12,7 +12,7 @@ const ProfilePage = () => {
   
 
   return (
-    <div className="w-screen flex flex-col justify-center items-center text-white ml-[16%]">
+    <div className="w-screen flex flex-col justify-center items-center text-white md:ml-[16%]">
       <ProfileHeader username={username}/>
       <ProfilePosts username={username}/>
     </div>

@@ -41,6 +41,8 @@ const Login = () => {
     }
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if(username === '' || password === '') return
+
         if(event.key === 'Enter') handleLogin()
     }
 
