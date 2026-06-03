@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr
+
 
 class LoginResponse(BaseModel):
     username: str
@@ -25,10 +26,3 @@ class UserLogin(BaseModel):
 
 class RefreshRequest(BaseModel):
     refresh_token: str
-
-class LikeRequest(BaseModel):
-    post_id: int
-
-class CommentRequest(BaseModel):
-    post_id: int
-    content: str

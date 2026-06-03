@@ -1,24 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import HTTPException
 import jwt
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import or_, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.config import ALGORITHM, SECRET_KEY
-from core.database import get_db
 from core.security import create_access_token, create_refresh_token
+from .schemas import LoginResponse, RefreshRequest, UserCreate, UserLogin
 from models import User
-from schemas import LoginResponse, RefreshRequest, UserCreate, UserLogin, UserResponse
 from utils import hash_password, verify_password
 
 
-router = APIRouter(prefix='/auth', tags=['Auth'])
-
-@router.post('/register', response_model=UserResponse)
-async def register_user(data: UserCreate, db: AsyncSession = Depends(get_db)):
-    
-    
-    exist_user = select(User).where(or_(User.username == data.username, User.email == data.email))
-    result = await db.execute(exist_user)
+async def register_user_data(data: UserCreate, db: AsyncSession):
+    result = await db.execute(select(User).where(or_(User.username == data.username, User.email == data.email)))
     user = result.scalar_one_or_none()
 
     if user:
@@ -34,10 +27,8 @@ async def register_user(data: UserCreate, db: AsyncSession = Depends(get_db)):
 
     return new_user
 
-@router.post('/login', response_model=LoginResponse)
-async def login_user(data: UserLogin, db: AsyncSession = Depends(get_db)):
-    stmt = select(User).where(User.username == data.username)
-    result = await db.execute(stmt)
+async def login_user_data(data: UserLogin, db: AsyncSession):
+    result = await db.execute(select(User).where(User.username == data.username))
     user = result.scalar_one_or_none()
 
     if not user:
@@ -56,8 +47,7 @@ async def login_user(data: UserLogin, db: AsyncSession = Depends(get_db)):
         refresh_token=refresh_token
     )
 
-@router.post('/refresh')
-async def get_refresh(data: RefreshRequest, db: AsyncSession = Depends(get_db)):
+async def get_refresh_data(data: RefreshRequest, db: AsyncSession):
     try:
         payload = jwt.decode(data.refresh_token, SECRET_KEY, algorithms=ALGORITHM)
         user_id = payload.get('user_id')

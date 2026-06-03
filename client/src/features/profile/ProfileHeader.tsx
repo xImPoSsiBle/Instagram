@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom"
 import { profileApi } from "../../services/profileApi"
+import { isDefaultAvatar } from "../../utils"
 
 interface ProfileHeaderProps {
     username: string
@@ -12,20 +13,20 @@ const ProfileHeader = ({ username }: ProfileHeaderProps) => {
     const navigate = useNavigate()
     const location = useLocation()
 
-    const isDefaultAvatar = user?.profile_image?.includes('default-avatar') ?? false
+    const isDefault = isDefaultAvatar('default-avatar')
 
     if (!user) {
         return <div>Не найден</div>
     }
 
     const openFollowList = (type: 'follower' | 'following') => {
-        navigate(`/profile/${username}/${type}`, {state: {backgroundLocation: location}})
+        navigate(`/profile/${username}/${type}`, { state: { backgroundLocation: location } })
     }
 
     return (
         <div className="my-5 w-[70%] flex items-center flex-col">
             <div className="flex items-center">
-                <div className={`w-35 h-35 flex items-center justify-center rounded-full overflow-hidden ${isDefaultAvatar && 'invert'}`}>
+                <div className={`w-35 h-35 flex items-center justify-center rounded-full overflow-hidden ${isDefault && 'invert'}`}>
                     <img
                         src={user?.profile_image}
                         alt=""

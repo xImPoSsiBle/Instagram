@@ -21,7 +21,7 @@ const ProfilePosts = ({ username }: ProfilePostsProps) => {
     console.log(posts)
 
     return (
-        <div className="flex justify-start flex-wrap min-w-200 max-w-[700px] gap-1 my-5">
+        <div className="flex justify-start flex-wrap min-w-200 sm:max-w-[700px] max-w-[100px] gap-1 my-5">
             {posts?.length === 0 && <EmptyPosts />}
 
             {posts?.map(post => (

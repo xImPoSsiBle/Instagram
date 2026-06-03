@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { postApi } from "../services/postApi"
 import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io"
 import { useState } from "react"
+import { isDefaultAvatar } from "../utils"
 
 const PostDetails = () => {
     const { id } = useParams()
@@ -20,7 +21,7 @@ const PostDetails = () => {
         setComment("")
     }
     console.log(comments)
-    const isDefaultAvatar = post?.user?.profile_image?.includes('default-avatar') ?? false
+    const isDefault = isDefaultAvatar('default-avatar')
 
     return (
         <div
@@ -32,17 +33,17 @@ const PostDetails = () => {
                 className="md:flex w-[900px] h-[600px] bg-[#212328] rounded-xl overflow-y-auto md:overflow-hidden shadow-2xl text-white"
             >
                 <div className="flex-1 bg-black flex items-center justify-center">
-                    {post?.media_type === 'video' 
-                    ? <video src={post?.image} controls className="w-[470px] h-[600px] md:w-full md:h-full object-contain"></video>
-                    : <img src={post?.image} className="w-[470px] h-[600px] md:w-full md:h-fullobject-contain" />
-}   
+                    {post?.media_type === 'video'
+                        ? <video src={post?.image} controls className="w-[470px] h-[600px] md:w-full md:h-full object-contain"></video>
+                        : <img src={post?.image} className="w-[470px] h-[600px] md:w-full md:h-fullobject-contain" />
+                    }
                 </div>
 
                 <div className="w-full md:w-[380px] flex flex-col items-center">
                     <div className="w-[90%] flex items-center gap-3 p-4 border-b border-[#2b3036] ">
                         <img
                             src={post?.user.profile_image}
-                            className={`w-9 h-9 rounded-full ${isDefaultAvatar && 'invert'}`}
+                            className={`w-9 h-9 rounded-full ${isDefault && 'invert'}`}
                         />
                         <div className="px-4 py-2 text-sm">
                             <span className="font-semibold">{post?.user.username}</span>

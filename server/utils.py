@@ -2,6 +2,8 @@ import os
 from fastapi import HTTPException, UploadFile
 from passlib.context import CryptContext
 
+from core.config import BASE_URL
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def hash_password(password: str):
@@ -16,3 +18,9 @@ def get_media_type(file: UploadFile):
     if file.content_type.startswith('video/'):
         return 'video'
     raise HTTPException(400, 'Неподдерживаемый тип файла')
+
+def media_url(path: str | None, default : str = 'images/default-avatar.png'):
+    if not path:
+        path = default
+    
+    return f'{BASE_URL}/{path}'

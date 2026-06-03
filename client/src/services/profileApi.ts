@@ -24,10 +24,10 @@ export const profileApi = createApi({
             }),
             invalidatesTags: ['Profile']
         }),
-        getFollows: build.query<User, {username: string, type: string}>({
+        getFollows: build.query<User[], {username: string, type: string}>({
             query: ({username, type}) => ({
                 url: `follow/${username}/${type}`,
-                method: 'GET,'
+                method: 'GET'
             })
         })
     })

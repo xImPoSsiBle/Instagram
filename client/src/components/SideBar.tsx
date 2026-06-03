@@ -7,6 +7,7 @@ import { logout } from "../store/slices/authSlice";
 import { postApi } from "../services/postApi";
 import { useNavigate } from "react-router-dom";
 import { IoExitOutline } from "react-icons/io5";
+import { profileApi } from "../services/profileApi";
 
 interface MenuItems {
     name: string,
@@ -29,6 +30,7 @@ const SideBar = () => {
             onClick: () => {
                 dispatch(logout())
                 dispatch(postApi.util.resetApiState())
+                dispatch(profileApi.util.resetApiState())
             },
         },
     ];

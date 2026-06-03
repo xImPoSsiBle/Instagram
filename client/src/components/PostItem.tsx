@@ -4,6 +4,7 @@ import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
 import { FaRegComment } from "react-icons/fa";
 import { postApi } from "../services/postApi";
 import { useLocation, useNavigate } from "react-router-dom";
+import { isDefaultAvatar } from "../utils";
 
 
 interface PostItemProps {
@@ -25,7 +26,7 @@ const PostItem = ({ post }: PostItemProps) => {
         })
     }
 
-    const isDefaultAvatar = post?.user?.profile_image?.includes('default-avatar') ?? false
+    const isDefault = isDefaultAvatar('default-avatar')
     
     return (
         <div className='w-[470px] flex flex-col gap-3 p-3 mb-5'>
@@ -35,7 +36,7 @@ const PostItem = ({ post }: PostItemProps) => {
                 )}
 
                 <img
-                    className={`w-10 h-10 rounded-full ${avatarLoaded ? "block" : "hidden"} ${isDefaultAvatar && 'invert'}`}
+                    className={`w-10 h-10 rounded-full ${avatarLoaded ? "block" : "hidden"} ${isDefault && 'invert'}`}
                     src={post.user.profile_image}
                     onLoad={() => setAvatarLoaded(true)}
                     alt=""

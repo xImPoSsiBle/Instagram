@@ -23,7 +23,10 @@ const Main = () => {
                 ))
             }
             {isError && <div>Error</div>}
-            {posts?.length === 0 && <EmptyPosts />}
+            {posts?.length === 0
+                && <div className="w-screen h-screen">
+                    <EmptyPosts />
+                </div>}
             {posts?.map(post => (
                 <PostItem key={post.id} post={post} />
             ))
