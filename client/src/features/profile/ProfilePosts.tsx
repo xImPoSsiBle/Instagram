@@ -21,31 +21,33 @@ const ProfilePosts = ({ username }: ProfilePostsProps) => {
     console.log(posts)
 
     return (
-        <div className="flex justify-start flex-wrap min-w-200 sm:max-w-[700px] max-w-[100px] gap-1 my-5">
+        <div className="w-full max-w-3xl mx-auto px-1 my-5">
             {posts?.length === 0 && <EmptyPosts />}
 
-            {posts?.map(post => (
-                <div
-                    key={post.id}
-                    className="w-65 h-85 bg-gray-500 border border-black"
-                    onClick={() => handleClick(post.id)}
-                >
-                    {post.media_type === "video" ? (
-                        <video
-                            className='w-full h-full'
-                            src={post.image}
-                            muted
-                            preload="metadata"
-                        />
-                    ) : (
-                        <img
-                            src={post.image}
-                            alt="post"
-                            className="w-full h-full"
-                        />
-                    )}
-                </div>
-            ))}
+            <div className="grid grid-cols-3 gap-0.5 sm:gap-1">
+                {posts?.map(post => (
+                    <div
+                        key={post.id}
+                        className="aspect-square bg-gray-200 cursor-pointer overflow-hidden"
+                        onClick={() => handleClick(post.id)}
+                    >
+                        {post.media_type === "video" ? (
+                            <video
+                                className='w-full h-full object-cover'
+                                src={post.image}
+                                muted
+                                preload="metadata"
+                            />
+                        ) : (
+                            <img
+                                src={post.image}
+                                alt="post"
+                                className="w-full h-full object-cover"
+                            />
+                        )}
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }

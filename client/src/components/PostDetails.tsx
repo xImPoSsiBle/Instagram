@@ -35,7 +35,7 @@ const PostDetails = () => {
                 <div className="flex-1 bg-black flex items-center justify-center">
                     {post?.media_type === 'video'
                         ? <video src={post?.image} controls className="w-[470px] h-[600px] md:w-full md:h-full object-contain"></video>
-                        : <img src={post?.image} className="w-[470px] h-[600px] md:w-full md:h-fullobject-contain" />
+                        : <img src={post?.image} className="w-[470px] h-[600px] md:w-full md:h-full object-contain" />
                     }
                 </div>
 
