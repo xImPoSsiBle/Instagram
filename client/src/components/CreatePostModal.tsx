@@ -2,7 +2,6 @@ import React, { useState } from "react"
 import { useAppDispatch } from "../hooks/redux"
 import { toggleCreatePostModal } from "../store/slices/uiSlice"
 import { postApi } from "../services/postApi"
-// import { baseFetch } from "../../services/api"
 
 
 const CreatePostModal = () => {

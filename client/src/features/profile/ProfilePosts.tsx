@@ -18,8 +18,6 @@ const ProfilePosts = ({ username }: ProfilePostsProps) => {
         })
     }
 
-    console.log(posts)
-
     return (
         <div className="w-full max-w-3xl mx-auto px-1 my-5">
             {posts?.length === 0 && <EmptyPosts />}

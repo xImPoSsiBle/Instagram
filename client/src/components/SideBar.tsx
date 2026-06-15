@@ -21,17 +21,24 @@ const SideBar = () => {
 
     const { user } = useAppSelector(state => state.auth)
 
+    const handleLogout = async () => {
+        await fetch('http://localhost:8000/auth/logout', {
+            method: 'POST',
+            credentials: 'include',
+        })
+        dispatch(logout())
+        dispatch(postApi.util.resetApiState())
+        dispatch(profileApi.util.resetApiState())
+        navigate('/login')
+    }
+
     const menuItems: MenuItems[] = [
         { name: 'Главная', icon: <GoHome className="w-6 h-6 shrink-0" />, onClick: () => { navigate('/') } },
         { name: 'Создать', icon: <FiPlus className="w-6 h-6 shrink-0" />, onClick: () => { dispatch(toggleCreatePostModal()) } },
         { name: 'Профиль', icon: <FiUser className="w-6 h-6 shrink-0" />, onClick: () => { navigate(`/profile/${user.username}`) } },
         {
             name: 'Выход', icon: <IoExitOutline className="w-6 h-6 shrink-0" />,
-            onClick: () => {
-                dispatch(logout())
-                dispatch(postApi.util.resetApiState())
-                dispatch(profileApi.util.resetApiState())
-            },
+            onClick: handleLogout
         },
     ];
 

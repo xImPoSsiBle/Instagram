@@ -9,13 +9,44 @@ import PrivateRoute from './routes/PrivateRoute'
 import PostDetails from './components/PostDetails'
 import ProfilePage from './features/profile/ProfilePage'
 import FollowDetails from './components/FollowDetails'
+import { ToastContainer } from 'react-toastify'
+import { useAppDispatch, useAppSelector } from './hooks/redux'
+import { useEffect } from 'react'
+import { login, logout, setAuthLoading } from './store/slices/authSlice'
 
 function App() {
+  const dispatch = useAppDispatch()
+  const { isLoading } = useAppSelector(state => state.auth)
   const location = useLocation()
   const state = location.state as { backgroundLocation?: Location }
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const resp = await fetch('http://localhost:8000/auth/me', {
+          credentials: 'include',
+        })
+        if (resp.ok) {
+          const data = await resp.json()
+          dispatch(login(data))
+        } else {
+          dispatch(logout())
+        }
+      } catch {
+        dispatch(logout())
+      } finally {
+        dispatch(setAuthLoading(false))
+      }
+    }
+
+    checkAuth()
+  }, [])
+
+  if(isLoading) return null
+
   return (
     <>
+      <ToastContainer />
       <Routes location={state?.backgroundLocation || location}>
         <Route element={<PrivateRoute />}>
           <Route element={<MainLayout />}>

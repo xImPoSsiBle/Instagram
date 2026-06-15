@@ -7,8 +7,6 @@ import EmptyPosts from "../../components/EmptyPosts"
 const Main = () => {
     const { data: posts, isLoading, isError } = postApi.useGetAllPostsQuery()
 
-    console.log(posts)
-
     return (
         <div className='w-full h-full text-white flex flex-col items-center mb-15 md:mb-0'>
             {isLoading &&
@@ -22,7 +20,18 @@ const Main = () => {
                     </div>
                 ))
             }
-            {isError && <div>Error</div>}
+            {isError && (
+                <div className="flex flex-col items-center justify-center gap-3 mt-20 text-center px-4">
+                    <p className="text-white text-lg font-semibold">Что-то пошло не так</p>
+                    <p className="text-gray-400 text-sm">Не удалось загрузить посты. Проверьте соединение.</p>
+                    <button
+                        className="mt-2 px-6 py-2 bg-[#0066f4] text-white rounded-full text-sm hover:opacity-80 transition"
+                        onClick={() => window.location.reload()}
+                    >
+                        Попробовать снова
+                    </button>
+                </div>
+            )}
             {posts?.length === 0
                 && <div className="w-screen h-screen">
                     <EmptyPosts />

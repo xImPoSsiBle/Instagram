@@ -1,12 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import case, exists, func, select
+from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.database import get_db
 from core.security import get_current_user
-from models import User, Post, Follow
 from .service import get_profile_data, get_profile_posts_data
-from utils import media_url
+
 
 router = APIRouter(prefix='/profile', tags=['Profile'])
 

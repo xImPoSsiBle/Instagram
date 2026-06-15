@@ -6,13 +6,13 @@ import CreatePostModal from "../components/CreatePostModal"
 
 
 const MainLayout = () => {
-    const { access_token } = useAppSelector(state => state.auth)
+    const { isAuth } = useAppSelector(state => state.auth)
     const { createPostModal } = useAppSelector(state => state.ui)
     const navigate = useNavigate()
 
 
     useEffect(() => {
-        if (!access_token) {
+        if (!isAuth) {
             navigate('/login')
         }
     }, [])

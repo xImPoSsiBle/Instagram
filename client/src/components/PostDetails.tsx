@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { postApi } from "../services/postApi"
 import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io"
 import { useState } from "react"
-import { isDefaultAvatar } from "../utils"
+import { isDefaultAvatar } from "../utils/helpers"
 
 const PostDetails = () => {
     const { id } = useParams()
@@ -20,7 +20,7 @@ const PostDetails = () => {
         await createComment({ post_id: postId, content: comment })
         setComment("")
     }
-    console.log(comments)
+    
     const isDefault = isDefaultAvatar('default-avatar')
 
     return (

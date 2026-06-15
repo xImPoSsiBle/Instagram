@@ -4,7 +4,7 @@ import { IoMdHeart, IoMdHeartEmpty } from "react-icons/io";
 import { FaRegComment } from "react-icons/fa";
 import { postApi } from "../services/postApi";
 import { useLocation, useNavigate } from "react-router-dom";
-import { isDefaultAvatar } from "../utils";
+import { isDefaultAvatar } from "../utils/helpers";
 
 
 interface PostItemProps {

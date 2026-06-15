@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from "react-router-dom"
 import { profileApi } from "../../services/profileApi"
-import { isDefaultAvatar } from "../../utils"
+import { isDefaultAvatar } from "../../utils/helpers"
+
 
 interface ProfileHeaderProps {
     username: string

@@ -15,7 +15,6 @@ const FollowDetails = () => {
     const isFollowing = type === 'following'
 
     const { data } = profileApi.useGetFollowsQuery({ username, type })
-    console.log(data)
 
     return (
         <div
