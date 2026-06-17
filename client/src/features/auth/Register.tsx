@@ -28,7 +28,7 @@ const Register = () => {
         setIsLoading(true)
 
         try {
-            const resp = await fetch('http://localhost:8000/auth/register', {
+            const resp = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

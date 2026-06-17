@@ -23,7 +23,7 @@ const Login = () => {
         setIsLoading(true)
 
         try {
-            const resp = await fetch('http://localhost:8000/auth/login', {
+            const resp = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -48,7 +48,7 @@ const Login = () => {
             setIsLoading(false)
         }
     }
-
+    
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (username === '' || password === '') return
 

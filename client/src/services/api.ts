@@ -4,7 +4,7 @@ import { postApi } from "./postApi"
 
 
 const rawBaseQuery = fetchBaseQuery({
-    baseUrl: "http://localhost:8000/",
+    baseUrl: `${import.meta.env.VITE_API_URL}`,
     credentials: 'include',
 })
 
@@ -25,7 +25,7 @@ export const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) 
             api.dispatch(login(refreshResult.data))
             result = await rawBaseQuery(args, api, extraOptions)
         } else {
-            await fetch('http://localhost:8000/auth/logout', {
+            await fetch(`${import.meta.env.VITE_API_URL}/auth/logout`, {
                 method: 'POST',
                 credentials: 'include',
             })
