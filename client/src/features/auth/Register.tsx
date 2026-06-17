@@ -2,7 +2,7 @@ import { useState } from "react"
 import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5"
 import { Link, useNavigate } from "react-router-dom"
 import { notify } from "../../utils/notify"
-import { isValidEmail } from "../../utils/helpers"
+import { isStrongPassword, isValidEmail } from "../../utils/helpers"
 
 
 const Register = () => {
@@ -17,6 +17,11 @@ const Register = () => {
     const handleRegister = async () => {
         if (!isValidEmail(email)) {
             notify.error('Введите коректный email')
+            return
+        }
+
+        if (!isStrongPassword(password)) {
+            notify.error('Пароль должен содержать 8 символов, одну заглавную и одну цифру')
             return
         }
 
