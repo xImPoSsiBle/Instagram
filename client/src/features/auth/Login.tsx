@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../hooks/redux'
 import { login } from '../../store/slices/authSlice'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { notify } from '../../utils/notify'
+import { getCsrfToken } from '../../utils/csrf'
 
 const Login = () => {
     const dispatch = useAppDispatch()
@@ -21,12 +22,14 @@ const Login = () => {
 
     const handleLogin = async () => {
         setIsLoading(true)
-
         try {
+            const csrfToken = getCsrfToken()
+            
             const resp = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    ...(csrfToken && { 'X-CSRF-Token': csrfToken })
                 },
                 credentials: 'include',
                 body: JSON.stringify({ username, password })
@@ -48,7 +51,7 @@ const Login = () => {
             setIsLoading(false)
         }
     }
-    
+
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (username === '' || password === '') return
 
@@ -95,7 +98,7 @@ const Login = () => {
                     disabled={isLoading || username == '' || password == ''}
                     onClick={handleLogin}
                 >
-                    {isLoading? 'Вход...' : 'Войти'}
+                    {isLoading ? 'Вход...' : 'Войти'}
                 </button>
                 <p className='text-white'>Нет аккаунта? <Link to={'/register'} className='text-[#0066f4] cursor-pointer'>Зарегистрироваться</Link></p>
             </div>

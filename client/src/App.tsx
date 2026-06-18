@@ -13,6 +13,7 @@ import { ToastContainer } from 'react-toastify'
 import { useAppDispatch, useAppSelector } from './hooks/redux'
 import { useEffect } from 'react'
 import { login, logout, setAuthLoading } from './store/slices/authSlice'
+import { setCsrfToken } from './utils/csrf'
 
 function App() {
   const dispatch = useAppDispatch()
@@ -42,7 +43,16 @@ function App() {
     checkAuth()
   }, [])
 
-  if(isLoading) return null
+  useEffect(() => {
+    const initCsrf = async () => {
+      const resp = await fetch(`${import.meta.env.VITE_API_URL}/auth/csrf-token`, { credentials: 'include' })
+      const data = await resp.json()
+      setCsrfToken(data.csrf_token)
+    }
+    initCsrf()
+  }, [])
+
+  if (isLoading) return null
 
   return (
     <>

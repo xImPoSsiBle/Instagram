@@ -1,8 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi_csrf_protect import CsrfProtect
+from pydantic import BaseModel
 
 
+from core.config import CSRF_SECRET_KEY
 from models import *
 from utils import *
 from auth import router as auth_router
@@ -22,6 +25,14 @@ app.add_middleware(
     allow_methods=['*'],
     allow_headers=['*']
 )
+
+class CsrfSettings(BaseModel):
+    secret_key: str = CSRF_SECRET_KEY
+    cookie_samesite: str = 'lax'
+
+@CsrfProtect.load_config
+def get_csrf_config():
+    return CsrfSettings()
 
 app.mount('/images', StaticFiles(directory='images'), name='images')
 

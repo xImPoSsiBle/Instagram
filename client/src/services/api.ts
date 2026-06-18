@@ -1,11 +1,21 @@
 import { fetchBaseQuery, type BaseQueryFn } from "@reduxjs/toolkit/query"
 import { login, logout } from "../store/slices/authSlice"
 import { postApi } from "./postApi"
+import { getCsrfToken } from "../utils/csrf"
 
 
 const rawBaseQuery = fetchBaseQuery({
     baseUrl: `${import.meta.env.VITE_API_URL}`,
     credentials: 'include',
+    prepareHeaders: (headers) => {
+        const csrfToken = getCsrfToken()
+
+        if (csrfToken) {
+            headers.set('X-CSRF-Token', csrfToken)
+        }
+        
+        return headers
+    }
 })
 
 export const baseQueryWithReauth: BaseQueryFn = async (args, api, extraOptions) => {
