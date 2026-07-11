@@ -7,7 +7,7 @@ from core.config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, REFRESH_TOKEN_EX
 from core.security import create_access_token, create_refresh_token
 from .schemas import UserCreate, UserLogin
 from models import User
-from utils import hash_password, verify_password
+from utils import hash_password, media_url, verify_password
 
 
 async def register_user_data(data: UserCreate, db: AsyncSession):
@@ -55,7 +55,7 @@ async def login_user_data(data: UserLogin, response: Response, db: AsyncSession)
 
     set_auth_cookies(response, access_token, refresh_token)
 
-    return {'username': user.username, 'email': user.email}
+    return {'id': user.id,'username': user.username, 'email': user.email, 'profile_image': media_url(user.profile_image)}
 
 async def get_refresh_data(response: Response, db: AsyncSession, refresh_token: str = Cookie(None)):
     if not refresh_token:
@@ -82,4 +82,4 @@ async def get_refresh_data(response: Response, db: AsyncSession, refresh_token: 
 
     set_auth_cookies(response, new_access, new_refresh)
 
-    return {'username': user.username, 'email': user.email}
+    return {'id': user.id, 'username': user.username, 'email': user.email, 'profile_image': media_url(user.profile_image)}

@@ -3,6 +3,7 @@ import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5"
 import { Link, useNavigate } from "react-router-dom"
 import { notify } from "../../utils/notify"
 import { isStrongPassword, isValidEmail } from "../../utils/helpers"
+import { API_URL } from "../../constants/api"
 
 
 const Register = () => {
@@ -28,7 +29,7 @@ const Register = () => {
         setIsLoading(true)
 
         try {
-            const resp = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
+            const resp = await fetch(`${API_URL}/auth/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

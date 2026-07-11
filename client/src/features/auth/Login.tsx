@@ -5,6 +5,7 @@ import { login } from '../../store/slices/authSlice'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { notify } from '../../utils/notify'
 import { getCsrfToken } from '../../utils/csrf'
+import { API_URL } from '../../constants/api'
 
 const Login = () => {
     const dispatch = useAppDispatch()
@@ -25,7 +26,7 @@ const Login = () => {
         try {
             const csrfToken = getCsrfToken()
             
-            const resp = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+            const resp = await fetch(`${API_URL}/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -41,7 +42,7 @@ const Login = () => {
                 notify.error(data.detail)
                 return
             }
-
+            
             dispatch(login(data))
 
             navigate(from, { replace: true })

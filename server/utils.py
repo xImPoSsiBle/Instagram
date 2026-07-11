@@ -1,8 +1,9 @@
 import os
-from fastapi import HTTPException, UploadFile
+from fastapi import HTTPException, UploadFile, WebSocket
+import jwt
 from passlib.context import CryptContext
 
-from core.config import BASE_URL
+from core.config import ALGORITHM, BASE_URL, SECRET_KEY
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -19,8 +20,18 @@ def get_media_type(file: UploadFile):
         return 'video'
     raise HTTPException(400, 'Неподдерживаемый тип файла')
 
-def media_url(path: str | None, default : str = 'images/default-avatar.png'):
+def media_url(path: str | None, default : str = 'images/avatars/default-avatar.png'):
     if not path:
         path = default
     
     return f'{BASE_URL}/{path}'
+
+def get_user_id_from_ws(websocket: WebSocket):
+    token = websocket.cookies.get("access_token")
+    if not token:
+        return None
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        return payload["user_id"]
+    except jwt.PyJWTError:
+        return None

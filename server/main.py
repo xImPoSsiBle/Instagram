@@ -14,6 +14,7 @@ from likes import router as like_router
 from comments import router as comment_router
 from profiles import router as profile_router
 from follows import router as follow_router
+from chat import router as chat_router
 
 
 app = FastAPI()
@@ -43,3 +44,4 @@ app.include_router(like_router.router)
 app.include_router(comment_router.router)
 app.include_router(profile_router.router)
 app.include_router(follow_router.router)
+app.include_router(chat_router.router)

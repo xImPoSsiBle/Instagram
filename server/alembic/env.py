@@ -1,11 +1,9 @@
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
 from alembic import context
 
 from core.database import Base, sync_engine
+import models
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -53,18 +51,14 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
-    """Run migrations in 'online' mode.
+    connectable = sync_engine
 
-    In this scenario we need to create an Engine
-    and associate a connection with the context.
-
-    """
-
-    with sync_engine.connect() as connection:
+    with connectable.connect() as connection:
         context.configure(
-            connection=connection, 
+            connection=connection,
             target_metadata=target_metadata,
-            compare_type=True
+            compare_type=True,
+            compare_server_default=True
         )
 
         with context.begin_transaction():

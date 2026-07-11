@@ -1,36 +1,35 @@
-import { createSlice } from "@reduxjs/toolkit"
-import type { User } from "../../models/user.model"
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 
+interface AuthUser {
+    id: number
+    username: string
+    email: string,
+    profile_image: string
+}
 
 interface authState {
     isAuth: boolean,
     isLoading: boolean,
-    user: User
+    user: AuthUser | null
 }
 
 const initialState: authState = {
     isAuth: false,
     isLoading: true,
-    user: JSON.parse(localStorage.getItem('user') || '{}')
+    user: null
 }
 
 export const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        login: (state, action) => {
+        login: (state, action: PayloadAction<{ id: number, username: string, email: string, profile_image: string }>) => {
             state.isAuth = true
-            state.user.username = action.payload.username
-            state.user.email = action.payload.email
-
-            localStorage.setItem('user', JSON.stringify({username: action.payload.username, email: action.payload.email}))
+            state.user = action.payload
         },
         logout: (state) => {
             state.isAuth = false
-            state.user.username = ''
-            state.user.email = ''
-            
-            localStorage.removeItem('user')
+            state.user = null
         },
         setAuthLoading: (state, action) => {
             state.isLoading = action.payload

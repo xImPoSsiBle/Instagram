@@ -11,57 +11,88 @@ import ProfilePage from './features/profile/ProfilePage'
 import FollowDetails from './components/FollowDetails'
 import { ToastContainer } from 'react-toastify'
 import { useAppDispatch, useAppSelector } from './hooks/redux'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { login, logout, setAuthLoading } from './store/slices/authSlice'
 import { setCsrfToken } from './utils/csrf'
+import ChatPage from './features/chat/ChatPage'
+import { addMessage, setTyping, setUserStatus } from './store/slices/messagesSlice'
+import { WSContext } from './context/WSContext'
+import { API_URL, WS_URL } from './constants/api'
+import NotFoundPage from './components/NotFoundPage'
 
 function App() {
   const dispatch = useAppDispatch()
   const { isLoading } = useAppSelector(state => state.auth)
+  const { user } = useAppSelector(state => state.auth)
   const location = useLocation()
   const state = location.state as { backgroundLocation?: Location }
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const resp = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-          credentials: 'include',
-        })
-        if (resp.ok) {
-          const data = await resp.json()
-          dispatch(login(data))
-        } else {
-          dispatch(logout())
-        }
-      } catch {
+  const wsRef = useRef<WebSocket | null>(null);
+
+  const checkAuth = async () => {
+    try {
+      const resp = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
+        credentials: 'include',
+      })
+      if (resp.ok) {
+        const data = await resp.json()
+        console.log(data)
+        dispatch(login(data))
+      } else {
         dispatch(logout())
-      } finally {
-        dispatch(setAuthLoading(false))
       }
+    } catch {
+      dispatch(logout())
+    } finally {
+      dispatch(setAuthLoading(false))
     }
+  }
 
-    checkAuth()
-  }, [])
+  const initCsrf = async () => {
+    const resp = await fetch(`${API_URL}/auth/csrf-token`, { credentials: 'include' })
+    const data = await resp.json()
+    setCsrfToken(data.csrf_token)
+  }
+
 
   useEffect(() => {
-    const initCsrf = async () => {
-      const resp = await fetch(`${import.meta.env.VITE_API_URL}/auth/csrf-token`, { credentials: 'include' })
-      const data = await resp.json()
-      setCsrfToken(data.csrf_token)
-    }
+    if (!user) return;
+    wsRef.current = new WebSocket(`${WS_URL}/chat/ws/connect`);
+
+    wsRef.current.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      if (data.type === 'message') {
+        dispatch(addMessage(data));
+      }
+
+      if (data.type === 'status') {
+        dispatch(setUserStatus({ userId: data.user_id, isOnline: data.is_online }))
+      }
+
+      if (data.type === 'typing') {
+        dispatch(setTyping({ userId: data.from_user, isTyping: data.is_typing }))
+      }
+    };
+
+    return () => wsRef.current?.close();
+  }, [user]);
+
+  useEffect(() => {
     initCsrf()
+    checkAuth()
   }, [])
 
   if (isLoading) return null
 
   return (
-    <>
+    <WSContext.Provider value={wsRef}>
       <ToastContainer />
       <Routes location={state?.backgroundLocation || location}>
         <Route element={<PrivateRoute />}>
           <Route element={<MainLayout />}>
             <Route path='/' element={<Main />} />
             <Route path='/profile/:username' element={<ProfilePage />} key={location.pathname} />
+            <Route path='/direct/:id?' element={<ChatPage />} />
           </Route>
         </Route>
 
@@ -69,6 +100,8 @@ function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
         </Route>
+
+        <Route path='*' element={<NotFoundPage />} />
       </Routes>
 
       {state?.backgroundLocation && (
@@ -79,7 +112,7 @@ function App() {
           </Route>
         </Routes>
       )}
-    </>
+    </WSContext.Provider>
   )
 }
 

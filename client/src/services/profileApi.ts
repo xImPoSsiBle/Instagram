@@ -13,6 +13,10 @@ export const profileApi = createApi({
             query: (username) => `profile/${username}`,
             providesTags: ['Profile']
         }),
+        getUserById: build.query<User, number>({
+            query: (id) => `profile/id/${id}`,
+            providesTags: ['Profile']
+        }),
         getProfilePosts: build.query<Post[], string>({
             query: (username) => `profile/${username}/posts`,
             providesTags: ['ProfilePosts']
@@ -24,11 +28,19 @@ export const profileApi = createApi({
             }),
             invalidatesTags: ['Profile']
         }),
-        getFollows: build.query<User[], {username: string, type: string}>({
-            query: ({username, type}) => ({
+        getFollows: build.query<User[], { username: string, type: string }>({
+            query: ({ username, type }) => ({
                 url: `follow/${username}/${type}`,
                 method: 'GET'
             })
+        }),
+        updateProfile: build.mutation<User, FormData>({
+            query: (data) => ({
+                url: 'profile/update',
+                method: 'PATCH',
+                body: data,
+            }),
+            invalidatesTags: ['Profile']
         })
     })
 })

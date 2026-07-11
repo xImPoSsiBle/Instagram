@@ -16,3 +16,5 @@ class User(Base):
     post = relationship("Post", back_populates="owner", cascade="all, delete")
     comments = relationship("Comment", back_populates="author", cascade="all, delete")
     likes = relationship("Like", back_populates="user", cascade="all, delete")
+    sent_messages = relationship("Message",back_populates="sender")
+    chats = relationship("ChatMembers",back_populates="user")

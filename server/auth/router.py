@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.database import get_db
 from core.security import get_current_user
 from models import User
+from utils import media_url
 from .schemas import UserCreate, UserLogin, UserResponse
 from .service import get_refresh_data, login_user_data, register_user_data
 
@@ -45,4 +46,4 @@ async def get_me(user_id = Depends(get_current_user), db: AsyncSession = Depends
    if not user:
       raise HTTPException(status_code=401, detail='Пользователь не найден')
    
-   return {'username': user.username, 'email': user.email}
+   return {'id': user.id, 'username': user.username, 'email': user.email, 'profile_image': media_url(user.profile_image)}

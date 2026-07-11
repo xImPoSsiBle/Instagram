@@ -21,7 +21,7 @@ const PostDetails = () => {
         setComment("")
     }
     
-    const isDefault = isDefaultAvatar('default-avatar')
+    const isDefault = isDefaultAvatar(post?.user.profile_image ?? '')
 
     return (
         <div

@@ -7,7 +7,7 @@ interface ProfilePostsProps {
 }
 
 const ProfilePosts = ({ username }: ProfilePostsProps) => {
-    const { data: posts } = profileApi.useGetProfilePostsQuery(username)
+    const { data: posts, isLoading, isError } = profileApi.useGetProfilePostsQuery(username)
 
     const navigate = useNavigate()
     const location = useLocation()
@@ -17,6 +17,22 @@ const ProfilePosts = ({ username }: ProfilePostsProps) => {
             state: { backgroundLocation: location }
         })
     }
+
+    if (isLoading) return (
+        <div className="w-full max-w-3xl mx-auto px-1 my-5">
+            <div className="grid grid-cols-3 gap-0.5 sm:gap-1 animate-pulse">
+                {Array.from({ length: 9 }).map((_, i) => (
+                    <div key={i} className="aspect-square bg-neutral-800" />
+                ))}
+            </div>
+        </div>
+    )
+
+    if (isError) return (
+        <div className="text-neutral-400 text-sm text-center my-5">
+            Не удалось загрузить публикации
+        </div>
+    )
 
     return (
         <div className="w-full max-w-3xl mx-auto px-1 my-5">

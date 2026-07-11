@@ -26,7 +26,7 @@ const PostItem = ({ post }: PostItemProps) => {
         })
     }
 
-    const isDefault = isDefaultAvatar('default-avatar')
+    const isDefault = isDefaultAvatar(post.user.profile_image)
     
     return (
         <div className='w-[470px] flex flex-col gap-3 p-3 mb-5'>
