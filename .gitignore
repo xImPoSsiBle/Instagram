@@ -25,4 +25,5 @@ __pycache__/
 *.pyc
 *.pyo
 
-.vscode
+images/
+!images/avatars/default-avatar.png
