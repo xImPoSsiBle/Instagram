@@ -15,7 +15,7 @@ import { useEffect, useRef } from 'react'
 import { login, logout, setAuthLoading } from './store/slices/authSlice'
 import { setCsrfToken } from './utils/csrf'
 import ChatPage from './features/chat/ChatPage'
-import { addMessage, setTyping, setUserStatus } from './store/slices/messagesSlice'
+import { addMessage, incrementUnread, setTyping, setUserStatus } from './store/slices/messagesSlice'
 import { WSContext } from './context/WSContext'
 import { API_URL, WS_URL } from './constants/api'
 import NotFoundPage from './components/NotFoundPage'
@@ -36,7 +36,6 @@ function App() {
       })
       if (resp.ok) {
         const data = await resp.json()
-        console.log(data)
         dispatch(login(data))
       } else {
         dispatch(logout())
@@ -63,6 +62,12 @@ function App() {
       const data = JSON.parse(e.data);
       if (data.type === 'message') {
         dispatch(addMessage(data));
+        
+        const isCurrentChat = location.pathname === `/direct/${data.sender_id}`
+
+        if (!isCurrentChat && user.id !== data.sender_id) {
+          dispatch(incrementUnread(data.chat_id))
+        }
       }
 
       if (data.type === 'status') {

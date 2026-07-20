@@ -10,6 +10,10 @@ from models import Like, User
 from utils import get_media_type
 from .serializers import serialize_post
 
+
+ALLOWED_MIMETYPES = {'image/jpeg', 'image/png', 'image/webp', 'video/mp4'}
+MAX_FILE_SIZE = 10*1024*1024
+
 def build_post_query(user_id: int):
     liked_case = case((Like.user_id == user_id, 1), else_=0)
     return (select(
@@ -39,11 +43,24 @@ async def get_post_data(post_id: int, user_id: int, db: AsyncSession):
 
 async def create_post_data(caption: str, image: UploadFile, user_id: int, db: AsyncSession):
     os.makedirs('images', exist_ok=True)
+
+    file_size = 0
+    contents = await image.read()
+    file_size = len(contents)
+
+    if file_size > MAX_FILE_SIZE:
+        raise HTTPException(status_code=413, detail='Файл слишком большой')
+
+    if image.content_type not in ALLOWED_MIMETYPES:
+        raise HTTPException(status_code=400, detail='Недопустимый тип файла')
+
     media_type = get_media_type(image)
     filename = f'{user_id}_{uuid.uuid4().hex}_{image.filename}'
     file_path = f'images/{filename}'
+    
     with open(file_path, 'wb') as f:
-        f.write(await image.read())
+        f.write(contents)
+
     post = Post(image_url=file_path, caption=caption, user_id=user_id,media_type=media_type)
     db.add(post)
     await db.commit()

@@ -8,6 +8,7 @@ interface ChatItemProps {
 
 const ChatItem = ({ chat, active, onClick }: ChatItemProps) => {
     const isOnline = useAppSelector(state => state.messages.onlineUsers[chat.interlocutor.id] ?? false)
+    const unread = useAppSelector(state => state.messages.unread[chat.chat_id] ?? 0)
 
     return (
         <div
@@ -28,6 +29,11 @@ const ChatItem = ({ chat, active, onClick }: ChatItemProps) => {
                 </div>
                 <p className="text-[13px] text-neutral-400 truncate">{chat.last_message.text}</p>
             </div>
+            {unread > 0 && (
+                <span className="bg-[#0095f6] text-white text-[11px] font-medium rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0">
+                    {unread > 9 ? '9+' : unread}
+                </span>
+            )}
         </div>
     )
 }

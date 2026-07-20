@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { setMessages } from "../../store/slices/messagesSlice";
+import { markAsRead, setMessages } from "../../store/slices/messagesSlice";
 import { useWS } from "../../context/WSContext";
 import { API_URL } from "../../constants/api";
 import { logout } from "../../store/slices/authSlice";
@@ -67,6 +67,7 @@ export default function DMPage() {
     const history = await fetch(`${API_URL}/chat/${data.id}/messages`, { credentials: "include" });
     const msgs = await history.json();
     dispatch(setMessages({ chatId: data.id, messages: msgs }));
+    dispatch(markAsRead(data.id))
   }
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
