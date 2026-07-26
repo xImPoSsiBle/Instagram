@@ -42,16 +42,17 @@ async def save_messages(chat_id, sender_id: int, text: str, db: AsyncSession):
     await db.refresh(msg)
     return msg
 
-async def get_messages_data(chat_id, db: AsyncSession, limit: int = 50, offset: int = 0):
+async def get_messages_data(chat_id, db: AsyncSession, offset: int, limit: int):
     stmt = (
         select(Message)
         .where(Message.chat_id == chat_id)
-        .order_by(Message.created_at.asc())
+        .order_by(Message.created_at.desc())
         .offset(offset)
         .limit(limit)
     )
     result = await db.execute(stmt)
-    return result.scalars().all()
+    msgs = result.scalars().all()
+    return list(reversed(msgs))
 
 async def get_user_chats_data(current_user_id: int, db: AsyncSession):
     last_message = (

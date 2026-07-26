@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../../hooks/redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { markAsRead, setMessages } from "../../store/slices/messagesSlice";
+import { markAsRead, prependMessages, setMessages } from "../../store/slices/messagesSlice";
 import { useWS } from "../../context/WSContext";
 import { API_URL } from "../../constants/api";
 import { logout } from "../../store/slices/authSlice";
 import { chatApi } from "../../services/chatApi";
 import { profileApi } from "../../services/profileApi";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 
 export default function DMPage() {
@@ -18,11 +19,12 @@ export default function DMPage() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
-  const [inputText, setInputText] = useState("");
+  const [inputText, setInputText] = useState("")
   const [chatId, setChatId] = useState('')
+  const [offset, setOffset] = useState(0)
+  const [hasMore, setHasMore] = useState(false)
   const messages = useAppSelector(state => chatId ? (state.messages.chats[chatId] ?? []) : [])
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const bottomRef = useRef<HTMLDivElement>(null);
   const typingTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
   const wsRef = useWS()
 
@@ -36,38 +38,40 @@ export default function DMPage() {
   const currentUser = interlocutor ?? profileData
 
   const handleSend = () => {
-    const text = inputText.trim();
+    const text = inputText.trim()
     if (!text || !wsRef.current) return;
     wsRef.current.send(JSON.stringify({
       type: 'message',
       receiver_id: Number(receiverId),
       text,
-    }));
+    }))
 
-    setInputText("");
+    setInputText("")
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+      e.preventDefault()
+      handleSend()
     }
   };
 
   const isLastInGroup = (idx: number) => {
     const next = messages[idx + 1];
-    return !next || next.sender_id !== messages[idx].sender_id;
-  };
+    return !next || next.sender_id !== messages[idx].sender_id
+  }
 
   const initChat = async () => {
     const res = await fetch(`${API_URL}/chat/dm/${receiverId}`, { method: 'POST', credentials: 'include' })
     const data = await res.json()
     setChatId(data.id)
 
-    const history = await fetch(`${API_URL}/chat/${data.id}/messages`, { credentials: "include" });
-    const msgs = await history.json();
-    dispatch(setMessages({ chatId: data.id, messages: msgs }));
+    const history = await fetch(`${API_URL}/chat/${data.id}/messages`, { credentials: "include" })
+    const msgs = await history.json()
+    dispatch(setMessages({ chatId: data.id, messages: msgs }))
     dispatch(markAsRead(data.id))
+    setOffset(msgs.length)
+    setHasMore(msgs.length === 50)
   }
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -90,6 +94,17 @@ export default function DMPage() {
     }, 1500)
   }
 
+  const loadMore = async () => {
+    if (!chatId || !hasMore) return
+  
+    const res = await fetch(`${API_URL}/chat/${chatId}/messages?offset=${offset}&limit=50`, { credentials: 'include' })
+    const data = await res.json()
+
+    dispatch(prependMessages({ chatId, messages: data }))
+    setOffset(prev => prev + data.length)
+    setHasMore(data.length === 50)
+  }
+
   useEffect(() => {
     if (!receiverId) {
       return
@@ -105,15 +120,12 @@ export default function DMPage() {
   }
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    const ta = textareaRef.current
+    if (!ta) return
+    ta.style.height = "auto"
+    ta.style.height = Math.min(ta.scrollHeight, 120) + "px"
+  }, [inputText])
 
-  useEffect(() => {
-    const ta = textareaRef.current;
-    if (!ta) return;
-    ta.style.height = "auto";
-    ta.style.height = Math.min(ta.scrollHeight, 120) + "px";
-  }, [inputText]);
 
   return (
     <div className="flex flex-col max-w-240 h-screen pb-16 md:pb-0 w-full bg-black text-white font-sans">
@@ -145,39 +157,53 @@ export default function DMPage() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
-        {messages.map((msg, idx) => {
-          const isMine = msg.sender_id === user.id;
-          const last = isLastInGroup(idx);
-          return (
-            <div
-              key={msg.id}
-              className={`flex items-end gap-2 ${isMine ? "justify-end" : "justify-start"} ${last ? "mb-3" : "mb-0.5"}`}
-            >
-              {!isMine && (
-                <div className="w-7 h-7 shrink-0">
-                  {last ? (
-                    <img src={currentUser?.profile_image} alt="" className="w-7 h-7 rounded-full object-cover" />
-                  ) : (
-                    <div className="w-7 h-7" />
-                  )}
-                </div>
-              )}
+      <div
+        id="messages-container"
+        className="flex-1 overflow-y-auto px-4 py-4"
+        style={{ display: 'flex', flexDirection: 'column-reverse' }}
+      >
+        <InfiniteScroll
+          dataLength={messages.length}
+          next={loadMore}
+          hasMore={hasMore && !!chatId}
+          loader={<p className="text-center text-xs text-neutral-500 py-2">Загрузка...</p>}
+          inverse={true}
+          scrollableTarget="messages-container"
+          style={{ display: 'flex', flexDirection: 'column-reverse' }}
+        >
+          {[...messages].reverse().map((msg, idx) => {
+            const isMine = msg.sender_id === user.id;
+            const last = isLastInGroup(idx);
+            return (
+              <div
+                key={msg.id}
+                className={`flex items-end gap-2 ${isMine ? "justify-end" : "justify-start"} ${last ? "mb-3" : "mb-0.5"}`}
+              >
+                {!isMine && (
+                  <div className="w-7 h-7 shrink-0">
+                    {last ? (
+                      <img src={currentUser?.profile_image} alt="" className="w-7 h-7 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-7 h-7" />
+                    )}
+                  </div>
+                )}
 
-              <div className="flex flex-col gap-0.5 max-w-[72%]">
-                <div
-                  className={`px-4 py-2.5 text-sm leading-relaxed break-words
+                <div className="flex flex-col gap-0.5 max-w-[72%]">
+                  <div
+                    className={`px-4 py-2.5 text-sm leading-relaxed break-words
                     ${isMine
-                      ? "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 text-white rounded-[20px] rounded-br-[4px]"
-                      : "bg-neutral-800 text-white rounded-[20px] rounded-bl-[4px]"
-                    }`}
-                >
-                  {msg.text}
+                        ? "bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 text-white rounded-[20px] rounded-br-[4px]"
+                        : "bg-neutral-800 text-white rounded-[20px] rounded-bl-[4px]"
+                      }`}
+                  >
+                    {msg.text}
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            )
+          })}
+        </InfiniteScroll>
 
         {isTyping && (
           <div className="flex items-end gap-2">
@@ -193,8 +219,6 @@ export default function DMPage() {
             </div>
           </div>
         )}
-
-        <div ref={bottomRef} />
       </div>
 
       <div className="shrink-0 px-3 py-3 border-t border-neutral-800 flex items-end gap-3">

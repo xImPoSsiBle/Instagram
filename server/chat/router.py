@@ -70,8 +70,8 @@ async def get_chat_id(receiverId: int, current_user_id: int = Depends(get_curren
     return await get_or_create_chat(receiverId, current_user_id, db)
 
 @router.get('/{chatId}/messages')
-async def get_messages(chatId: str, db: AsyncSession = Depends(get_db)):
-    return await get_messages_data(chatId, db)
+async def get_messages(chatId: str, db: AsyncSession = Depends(get_db), offset: int = 0, limit: int = 50):
+    return await get_messages_data(chatId, db, offset, limit)
 
 @router.get('/')
 async def get_user_chats(current_user_id: int = Depends(get_current_user), db: AsyncSession = Depends(get_db)):
